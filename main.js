@@ -95,8 +95,8 @@
             addSetting("Toggle shader editor", () => { editor.node.style.display = editor.node.style.display === "none" ? "" : "none" })
         }
 
-        // Configure :)
-        configure()
+        // Now that everything is set up, we can configure :)
+        configure();
     }
 }
 
