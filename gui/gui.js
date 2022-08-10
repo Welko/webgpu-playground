@@ -222,12 +222,11 @@ GUI.Alert = class extends GUI.Panel {
         const header = new GUI.Text(title || "Alert");
         this.add(header);
 
-        const content = document.createElement("div");
-        content.textContent = text + "\n\n" + "Click this window to close it";
+        const content = new GUI.Text(text + "\n\n" + "Click this window to close it");
         console.log(text);
+        this.add(content);
 
         this.node.addEventListener("click", () => this.dispose());
-        this.node.appendChild(content);
     }
 }
 
