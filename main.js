@@ -138,10 +138,12 @@ class Sample {
      * You don't even have to call super() if you don't want to :)
      * But if you decide not to, I really recommend that you still call context.configure
      */
-    resize() {
+    resize(width, height) {
         this.context.configure({
             device: this.device,
-            format: this.gpu.getPreferredCanvasFormat(),
+            format: this.context.getPreferredFormat(this.adapter), // TODO replace this WebGPU-DEPRECATED function by the line below!
+            //format: this.gpu.getPreferredCanvasFormat(),
+            size: [width, height], // TODO remove this WebGPU-DEPRECATED parameter! The width and height of HTMLCanvasElement are now used
             alphaMode: "opaque"
         });
     }
