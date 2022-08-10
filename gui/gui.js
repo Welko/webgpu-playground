@@ -61,6 +61,7 @@ GUI.TextArea = class extends GUI.Element {
     constructor(text) {
         super(document.createElement("textarea"));
         this.node.classList.add("TextArea");
+        this.node.spellcheck = false;
         if (text) this.node.value = text;
         this.node.addEventListener("keydown", (event) => {
             switch (event.key) {
