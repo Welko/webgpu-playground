@@ -24,7 +24,7 @@
         const adapter = gpu && await gpu.requestAdapter();
         const device = adapter && await adapter.requestDevice();
         const context = device && canvas.node.getContext("webgpu");
-        if (!device) throw "WebGPU not supported.\Try using the latest version of Google Chrome\nor Google Chrome Canary";
+        if (!device) throw "WebGPU not supported.\nTry using the latest version of Google Chrome\nor Google Chrome Canary";
 
         // Define WebGPU configuration and set up reconfiguration on resize
         // This is called at the end of this function
