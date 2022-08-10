@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RTVis WebGPU Playground</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="ui.css">
+
+</head>
+<body>
+
+    <!-- Scripts -->
+    <script src="ui.js"></script>
+    <script src="editor.js"></script>
+    <script src="main.js"></script>
+
+    <!-- Shaders go here! TODO: add more -->
+    <!-- Do not provide a 'src'. It will be inferred from the id, like this: src="shaders/{id}" -->
+    <script type="text/plain" src="shaders/triangle.wgsl"></script>
+
+    <!-- Samples go here! TODO: add more -->
+    <script src="samples/triangle.js"></script>
+
+    <!-- Layout -->
+    <div id="bar">
+        <a href="https://www.cg.tuwien.ac.at/" target="_blank">
+            <img src="Klex.svg" alt="CG institute logo">
+        </a>
+        <span id="title">
+            <a href="https://github.com/Welko/webgpu-playground" target="_blank">RTVis WebGPU Playground</a>
+            <span>
+                by
+                <a href="https://scholar.google.at/citations?user=UBRoSHUAAAAJ" target="_blank">
+                    Lucas Melo
+                </a>
+            </span>
+        </span>
+        <span>
+            <label for="samples">Samples</label>
+            <select id="samples"></select>
+        </span>
+        <span>
+            <label for="settings">Settings</label>
+            <select id="settings"></select>
+        </span>
+    </div>
+    <div id="viewport">
+        <canvas id="webGpuCanvas"></canvas>
+        <div id="ui"></div>
+    </div>
+    <div id="editor">
+
+    </div>
+
+</body>
+</html>
