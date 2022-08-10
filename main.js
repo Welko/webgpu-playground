@@ -34,12 +34,14 @@
             canvas.node.width = width;
             canvas.node.height = height;
             activeSample.resize(width, height);
+            activeSample.draw();
         };
         window.addEventListener("resize", () => configure());
 
         // Set up the shader editor
         const editor = new Editor(document.getElementById("editor"), device, (shaderName, shaderCode) => {
             activeSample.reload(shaderName, shaderCode);
+            activeSample.draw();
         });
 
         // Just to be sure, check if all samples extend the Sample class
