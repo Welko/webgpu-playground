@@ -8,7 +8,7 @@ You can also check it out online right now: [welko.github.io/webgpu-playground](
 
 
 
-## Tutorial to create your own sample
+## Tutorial: Creating your own sample
 
 1) Create a new file under the /samples directory (it can be anywhere though)
 2) Add this file as a <script> in index.html (look for \<!-- Samples go here! -->)
