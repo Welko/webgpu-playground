@@ -140,11 +140,11 @@ class Sample {
      */
     resize(width, height) {
         this.context.configure({
+            alphaMode: "opaque",
             device: this.device,
-            format: this.context.getPreferredFormat(this.adapter), // TODO replace this WebGPU-DEPRECATED function by the line below!
-            //format: this.gpu.getPreferredCanvasFormat(),
+            format: this.context.getPreferredFormat(this.adapter), // TODO remove this WebGPU-DEPRECATED way of getting the preferred format
+            //format: this.gpu.getPreferredCanvasFormat(), // TODO use this instead of the line above
             size: [width, height], // TODO remove this WebGPU-DEPRECATED parameter! The width and height of HTMLCanvasElement are now used
-            alphaMode: "opaque"
         });
     }
 
