@@ -1,6 +1,6 @@
-const UI = {}
+const GUI = {}
 
-UI.Element = class {
+GUI.Element = class {
     constructor(node) {
         this.node = node;
         this.node.className = "Element";
@@ -30,7 +30,7 @@ UI.Element = class {
     }
 }
 
-UI.Button = class extends UI.Element {
+GUI.Button = class extends GUI.Element {
     constructor(text, onClick) {
         super(document.createElement("button"));
         this.node.classList.add("Button");
@@ -39,7 +39,7 @@ UI.Button = class extends UI.Element {
     }
 }
 
-UI.Text = class extends UI.Element {
+GUI.Text = class extends GUI.Element {
     constructor(text) {
         super(document.createElement("span"));
         this.node.classList.add("Text");
@@ -50,14 +50,14 @@ UI.Text = class extends UI.Element {
     }
 }
 
-UI.Header = class extends UI.Text {
+GUI.Header = class extends GUI.Text {
     constructor(text) {
         super(text);
         this.node.classList.add("Header");
     }
 }
 
-UI.TextArea = class extends UI.Element {
+GUI.TextArea = class extends GUI.Element {
     constructor(text) {
         super(document.createElement("textarea"));
         this.node.classList.add("TextArea");
@@ -102,7 +102,7 @@ UI.TextArea = class extends UI.Element {
     }
 }
 
-UI.List = class extends UI.Element {
+GUI.List = class extends GUI.Element {
     constructor() {
         super(document.createElement("ul"));
         this.node.classList.add("List");
@@ -120,7 +120,7 @@ UI.List = class extends UI.Element {
     }
 }
 
-UI.ComboBox = class extends UI.Element {
+GUI.ComboBox = class extends GUI.Element {
     constructor(options, onChange, defaultOption) {
         super(document.createElement("select"));
         this.node.classList.add("ComboBox");
@@ -141,14 +141,14 @@ UI.ComboBox = class extends UI.Element {
     }
 }
 
-UI.Separator = class extends UI.Element {
+GUI.Separator = class extends GUI.Element {
     constructor() {
         super(document.createElement("div"));
         this.node.classList.add("Separator");
     }
 }
 
-UI.Panel = class extends UI.Element {
+GUI.Panel = class extends GUI.Element {
     constructor(node) {
         super(node || document.createElement("div"));
         this.node.classList.add("Panel");
@@ -158,57 +158,85 @@ UI.Panel = class extends UI.Element {
     }
 }
 
-UI.Section = class extends UI.Panel {
+GUI.Section = class extends GUI.Panel {
     constructor(title) {
         super();
         this.node.classList.add("Section");
-        this._header = new UI.Text(title);
+        this._header = new GUI.Text(title);
         this._header.addEventListener("click", (event) => {
-            if (event.button !== 2) return; // Only proceed for RIGHT mouse button
+            //if (event.button !== 2) return; // Only proceed for RIGHT mouse button
+            if (event.button !== 0) return; // Only proceed for LEFT mouse button
             this.toggleClass("collapsed")
         });
         this.add(this._header);
     }
 }
 
-UI.Window = class extends UI.Section {
+GUI.Window = class extends GUI.Panel {
     constructor(title) {
-        super(title);
+        super();
         this.node.classList.add("Window");
 
-        let dragging = false;
-        this._header.addEventListener("mousedown", () => dragging = true);
-        this._header.addEventListener("mouseup", () => dragging = false);
-        this._header.addEventListener("mousemove", (event) => {
-            if (!dragging) return;
-            const x = event.clientX;
-            const y = event.clientY;
-            // TODO
-            console.log("Drag occurred on position " + x + ", " + y);
+        const offset = { x: 0, y: 0 };
+        let pos0 = null; // The initial position of the dragging
+        let pos = null; // The current position of the dragging
+        this._header = new GUI.Text(title);
+        this._header.addEventListener("mousedown", (event) => {
+            pos0 = pos = { x: event.pageX, y: event.pageY };
+            this._header.node.style.cursor = "grabbing";
+            document.body.style.cursor = "grabbing";
+            this.node.style.pointerEvents = "none";
+            this.node.style.userSelect = "none";
         });
+        document.body.addEventListener("mouseup", (event) => {
+            if (!pos0 || !pos) return;
+            if (pos.x === pos0.x && pos.y === pos0.y && event.button === 0) { // 0 is LEFT mouse button
+                this.toggleClass("collapsed");
+            }
+            pos0 = pos = null;
+            this._header.node.style.cursor = "";
+            document.body.style.cursor = "";
+            this.node.style.pointerEvents = "";
+            this.node.style.userSelect = "";
+        });
+        document.body.addEventListener("mousemove", (event) => {
+            if (!pos) return;
+            const newPos = { x: event.pageX, y: event.pageY };
+            offset.x += (newPos.x - pos.x);
+            offset.y += (newPos.y - pos.y);
+            this.node.style.marginLeft = offset.x + "px";
+            this.node.style.marginTop = offset.y + "px";
+            pos = newPos;
+            //this.node.style.position = "absolute";
+        });
+        this.add(this._header);
     }
 }
 
-UI.Alert = class extends UI.Window {
+GUI.Alert = class extends GUI.Panel {
     constructor(text, title) {
-        super(title || "Alert");
+        super();
         this.node.classList.add("Alert");
+
+        const header = new GUI.Text(title || "Alert");
+        this.add(header);
 
         const content = document.createElement("div");
         content.textContent = text + "\n\n" + "Click this window to close it";
         console.log(text);
+
         this.node.addEventListener("click", () => this.dispose());
         this.node.appendChild(content);
     }
 }
 
-UI.Workspace = class extends UI.Element {
+GUI.Workspace = class extends GUI.Element {
     constructor(node) {
         super(node || document.createElement("div"));
         this.node.classList.add("Workspace");
     }
     alert(text, title) {
-        this.node.appendChild(new UI.Alert(text, title).node);
+        this.node.appendChild(new GUI.Alert(text, title).node);
     }
     add(window) {
         this.node.appendChild(window.node);

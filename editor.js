@@ -1,4 +1,4 @@
-class Editor extends UI.Panel {
+class Editor extends GUI.Panel {
 
     /**
      * @param node The node of this editor. In the context of RTVis WebGPU Playground, this should be document.getElementById("editor")
@@ -10,7 +10,7 @@ class Editor extends UI.Panel {
         this.node.classList.add("Editor");
         this.device = device;
 
-        const resize = new UI.Element(document.createElement("div"));
+        const resize = new GUI.Element(document.createElement("div"));
             let h = 15 * parseFloat(getComputedStyle(document.documentElement).fontSize); // Convert 15rem -> px
             let y = null;
             resize.addEventListener("mousedown", (event) => {
@@ -20,6 +20,7 @@ class Editor extends UI.Panel {
                 this.node.style.userSelect = "none";
             });
             document.body.addEventListener("mouseup", () => {
+                if (y === null) return;
                 y = null;
                 document.body.style.cursor = "";
                 this.node.style.pointerEvents = "";
@@ -45,12 +46,12 @@ class Editor extends UI.Panel {
                 event.preventDefault();
             })
 
-        const content = new UI.Panel();
-            this.list = new UI.List();
-            this.editor = new UI.TextArea();
-            const feedback = new UI.Panel();
-                this.message = new UI.List();
-                feedback.add(new UI.Text("Press Ctrl+S to recompile\nClick on error to locate"));
+        const content = new GUI.Panel();
+            this.list = new GUI.List();
+            this.editor = new GUI.TextArea();
+            const feedback = new GUI.Panel();
+                this.message = new GUI.List();
+                feedback.add(new GUI.Text("Press Ctrl+S to recompile\nClick on error to locate"));
                 feedback.add(this.message);
             content.add(this.list);
             content.add(this.editor);
@@ -99,6 +100,7 @@ class Editor extends UI.Panel {
             /* Content */
             .Editor > :nth-child(2) {
                 display: flex;
+                flex-direction: row;
                 min-height: 5rem;
                 gap: 0;
             }

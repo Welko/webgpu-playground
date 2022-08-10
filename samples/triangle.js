@@ -38,6 +38,23 @@ fn fs_main(@location(0) vColor: vec4<f32>) -> @location(0) vec4<f32> {
             this.reload("Triangle", shader);
             //this.animate();
             //setTimeout(() => this.stop(), 2000);
+
+            const window = new GUI.Window("Settings");
+            window.add(new GUI.Text("Hello world!\nInsert line breaks with \\n :)"));
+            window.add(new GUI.Button("Click me!", () => this.gui.alert("Gotcha!")));
+            const section = new GUI.Section("It's nice to organize things");
+            section.add(new GUI.ComboBox(["Option 1", "Some other option", "Don't choose me", "Option 4"], (selected) => this.gui.alert("You chose \"" + selected + "\".\nGreat choice!")))
+            const dontDoThis = new GUI.Element(document.createElement("div"));
+            dontDoThis.node.textContent = "Going low level is not recommended";
+            dontDoThis.node.style.textDecoration = "underline";
+            dontDoThis.node.style.color = "red";
+            section.add(dontDoThis);
+            window.add(section);
+            this.gui.add(window);
+
+            const window2 = new GUI.Window("Second window");
+            window2.add(new GUI.Text("Some shenanigans\nI don't know...\n\nClick this window's title\nbar to collapse"));
+            this.gui.add(window2);
         }
 
         draw() {

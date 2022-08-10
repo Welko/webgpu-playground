@@ -2,22 +2,22 @@
     // Entry point here!
     window.addEventListener("load", () => {
 
-        const ui = new UI.Workspace(document.getElementById("ui"));
+        const gui = new GUI.Workspace(document.getElementById("gui"));
 
-        main(ui)
+        main(gui)
             //.then(() => console.log("Successfully initialized!"))
             .catch((reason) => {
-                ui.alert(reason, "Error");
+                gui.alert(reason, "Error");
             });
     });
 
-    async function main(ui) {
+    async function main(gui) {
         // Declare variables that will be used throughout this function
         let activeSample = null;
 
         // Set up the canvas
         const viewport = document.getElementById("viewport");
-        const canvas = new UI.Element(document.getElementById("webGpuCanvas"));
+        const canvas = new GUI.Element(document.getElementById("webGpuCanvas"));
 
         // Initialize WebGPU
         const gpu = navigator.gpu;
@@ -53,15 +53,15 @@
         if (samples.length === 0) {
             throw "Could not find any samples\nThere may be more details about this in the console";
         } else if (samples.length !== Object.keys(SAMPLES).length) {
-            ui.alert("Some samples could not be accepted\nCheck the console for more details");
+            gui.alert("Some samples could not be accepted\nCheck the console for more details");
         }
 
         // Add samples to UI
         {
             const activateSample = (sampleName) => {
                 if (activeSample) activeSample.stop();
-                ui.clear();
-                activeSample = new SAMPLES[sampleName](ui, gpu, adapter, device, context);
+                gui.clear();
+                activeSample = new SAMPLES[sampleName](gui, gpu, adapter, device, context);
                 editor.shaders = activeSample.shaders();
             };
             const samplesSelect = document.getElementById("samples");
@@ -93,7 +93,7 @@
             });
             const firstOption = "- select -";
             addSetting(firstOption, () => {});
-            addSetting("Toggle UI", () => ui.node.style.display = ui.node.style.display === "none" ? "" : "none");
+            addSetting("Toggle GUI", () => gui.node.style.display = gui.node.style.display === "none" ? "" : "none");
             addSetting("Toggle shader editor", () => { editor.node.style.display = editor.node.style.display === "none" ? "" : "none" })
         }
 
@@ -106,13 +106,14 @@
 const SAMPLES = {};
 class Sample {
     /**
-     * @param ui The main workspace (useful to add customizable parameters through windows, similar to nanogui)
+     * Overriding this is not recommended
+     * @param gui The main workspace (a GUI.Workspace), useful to add customizable parameters through windows in nanogui fashion
      * @param adapter WebGPU adapter
      * @param device WebGPU device
      * @param context WebGPU context of HTMLCanvasElement
      */
-    constructor(ui, gpu, adapter, device, context) {
-        this.ui = ui;
+    constructor(gui, gpu, adapter, device, context) {
+        this.gui = gui;
         this.gpu = gpu;
         this.adapter = adapter;
         this.device = device;
