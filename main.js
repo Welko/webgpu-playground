@@ -34,14 +34,14 @@
             canvas.node.width = width;
             canvas.node.height = height;
             activeSample.resize(width, height);
-            activeSample.draw();
+            activeSample.update();
         };
         window.addEventListener("resize", () => configure());
 
         // Set up the shader editor
         const editor = new Editor(document.getElementById("editor"), device, (shaderName, shaderCode) => {
-            activeSample.reload(shaderName, shaderCode);
-            activeSample.draw();
+            activeSample.reloadShader(shaderName, shaderCode);
+            activeSample.update();
         });
 
         // Just to be sure, check if all samples extend the Sample class
@@ -119,6 +119,9 @@ class Sample {
         this.device = device;
         this.context = context;
         this._animating = false;
+        for (const [shaderName, shaderCode] of Object.entries(this.shaders())) {
+            this.reloadShader(shaderName, shaderCode);
+        }
         this.init();
     }
 
@@ -128,13 +131,30 @@ class Sample {
     init() {}
 
     /** Override me! */
-    draw() {}
+    update() {}
 
     /** Override me! Return an object mapping shader names to their respective codes: { [name: string]: string } */
     shaders() {}
 
     /** Override me! Implement shader reloading */
-    reload(shaderName, shaderCode) {}
+    reloadShader(shaderName, shaderCode) {}
+
+    /**
+     * Override me! Handle mouse interactions
+     * @param type "down" | "up" | "move" | "click"
+     * @param button "left" | "middle" | "right"
+     * @param keys string[] - A list with the values of all the keys pressed, matching KeyboardEvent.key (see https://www.toptal.com/developers/keycode/for/a)
+     * @param x number - Mouse cursor X position on the WebGPU canvas
+     * @param y number - Mouse cursor Y position on the WebGPU canvas
+     */
+    mouse(type, button, keys, x, y) {}
+
+    /**
+     * Override me! Handle keyboard interactions
+     * @param type "down" | "up"
+     * @param keys string[] - A list with the values of all the keys pressed, matching KeyboardEvent.key (see https://www.toptal.com/developers/keycode/for/a)
+     */
+    key(type, keys) {}
 
     /**
      * Feel free to override me too! Or not... up to you
@@ -155,12 +175,15 @@ class Sample {
     get name() {
         return this.constructor.name;
     }
+    get animating() {
+        return this._animating;
+    }
     animate() {
         if (this._animating) return;
         this._animating = true;
 
-        const draw = () => {
-            this.draw();
+        const update = () => {
+            this.update();
 
             // Unused for now TODO
             const now = performance.now();
@@ -169,11 +192,11 @@ class Sample {
             console.log("Frame"); // TODO remove logging
             lastFrame = now;
 
-            if (this._animating) requestAnimationFrame(draw);
+            if (this._animating) requestAnimationFrame(update);
         };
 
         let lastFrame = performance.now();
-        requestAnimationFrame(draw);
+        requestAnimationFrame(update);
     }
     stop() {
         this._animating = false;

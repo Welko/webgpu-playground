@@ -103,6 +103,46 @@ GUI.TextArea = class extends GUI.Element {
     }
 }
 
+GUI.NamedElement = class extends GUI.Element {
+    constructor(text, element) {
+        super(document.createElement("span"));
+        this.node.classList.add("NamedElement");
+        this._label = document.createElement("label");
+        this._label.textContent = text;
+        if (element.id) {
+            console.warn("Cannot link label to element " + element.constructor.name + " because it already has an ID");
+        } else {
+            const id = "uniqueNamedElementId" + GUI.NamedElement.id++;
+            this._label.for = id;
+            element.node.id = id;
+        }
+        this.node.appendChild(this._label);
+        this.node.appendChild(element.node);
+    }
+    static id = 0;
+    set text(text) {
+        this._label.textContent = text;
+    }
+}
+
+GUI.NumberBox = class extends GUI.Element {
+    constructor(min, max, step, value, onChange) {
+        super(document.createElement("input"));
+        this.node.classList.add("NumberBox");
+        this.node.type = "number";
+        if (min) this.min = min;
+        if (max) this.max = max;
+        if (step) this.step = step;
+        if (value) this.value = value;
+        this.node.addEventListener("input", () => onChange(this.value));
+    }
+    set min(min) { this.node.min = min; }
+    set max(max) { this.node.max = max; }
+    set step(step) { this.node.step = step; }
+    set value(value) { this.node.value = value; }
+    get value() { return parseFloat(this.node.value); }
+};
+
 GUI.List = class extends GUI.Element {
     constructor() {
         super(document.createElement("ul"));
@@ -178,12 +218,12 @@ GUI.Window = class extends GUI.Panel {
         super();
         this.node.classList.add("Window");
 
-        const offset = { x: 0, y: 0 };
+        const offset = {x: 0, y: 0};
         let pos0 = null; // The initial position of the dragging
         let pos = null; // The current position of the dragging
         this._header = new GUI.Text(title);
         this._header.addEventListener("mousedown", (event) => {
-            pos0 = pos = { x: event.pageX, y: event.pageY };
+            pos0 = pos = {x: event.pageX, y: event.pageY};
             this._header.node.style.cursor = "grabbing";
             document.body.style.cursor = "grabbing";
             this.node.style.pointerEvents = "none";
@@ -202,7 +242,7 @@ GUI.Window = class extends GUI.Panel {
         });
         document.body.addEventListener("mousemove", (event) => {
             if (!pos) return;
-            const newPos = { x: event.pageX, y: event.pageY };
+            const newPos = {x: event.pageX, y: event.pageY};
             offset.x += (newPos.x - pos.x);
             offset.y += (newPos.y - pos.y);
             this.node.style.marginLeft = offset.x + "px";

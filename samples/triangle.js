@@ -1,5 +1,6 @@
 {
-    const shader =
+    const shaders = {
+        Triangle:
 `struct Output {
     @builtin(position) Position : vec4<f32>,
     @location(0) vColor : vec4<f32>
@@ -29,58 +30,42 @@ fn vs_main(@builtin(vertex_index) VertexIndex: u32) -> Output {
 fn fs_main(@location(0) vColor: vec4<f32>) -> @location(0) vec4<f32> {
     return vColor;
 }`
+    }
 
     SAMPLES.Triangle = class extends Sample {
         init() {
-            this._shaders = {
-                Triangle: shader
-            }
-            this.reload("Triangle", shader);
-            //this.animate();
-            //setTimeout(() => this.stop(), 2000);
+            this._colorAttachment = {
+                view: null, // Will be set in draw()
+                clearValue: { r: 0, g: 0, b: 0, a: 1},
+                loadOp: "clear",
+                loadValue: { r: 0, g: 0, b: 0, a: 1},
+                storeOp: "store"
+            };
+
+            this._vertices = new GUI.NumberBox(3, 1000000, 1, 3, (value) => {
+                this.update();
+            });
 
             const window = new GUI.Window("Settings");
-            window.add(new GUI.Text("Hello world!\nInsert line breaks with \\n :)"));
-            window.add(new GUI.Button("Click me!", () => this.gui.alert("Gotcha!")));
-            const section = new GUI.Section("It's nice to organize things");
-            section.add(new GUI.ComboBox(["Option 1", "Some other option", "Don't choose me", "Option 4"], (selected) => this.gui.alert("You chose \"" + selected + "\".\nGreat choice!")))
-            const dontDoThis = new GUI.Element(document.createElement("div"));
-            dontDoThis.node.textContent = "Going low level is not recommended";
-            dontDoThis.node.style.textDecoration = "underline";
-            dontDoThis.node.style.color = "red";
-            section.add(dontDoThis);
-            window.add(section);
+            window.add(new GUI.NamedElement("#vertices", this._vertices));
             this.gui.add(window);
-
-            const window2 = new GUI.Window("Second window");
-            window2.add(new GUI.Text("Some shenanigans\nI don't know...\n\nClick this window's title\nbar to collapse"));
-            this.gui.add(window2);
         }
 
-        draw() {
+        update() {
             const commandEncoder = this.device.createCommandEncoder();
-            const textureView = this.context.getCurrentTexture().createView();
-            const renderPass = commandEncoder.beginRenderPass({
-                colorAttachments: [{
-                    view: textureView,
-                    clearValue: { r: 0, g: 0, b: 0, a: 1},
-                    loadOp: "clear",
-                    loadValue: { r: 0, g: 0, b: 0, a: 1},
-                    storeOp: "store"
-                }]
-            });
+            this._colorAttachment.view = this.context.getCurrentTexture().createView();
+            const renderPass = commandEncoder.beginRenderPass({ colorAttachments: [this._colorAttachment] });
             renderPass.setPipeline(this.pipeline);
-            renderPass.draw(3, 1, 0, 0);
+            renderPass.draw(this._vertices.value, 1, 0, 0);
             renderPass.end();
             this.device.queue.submit([commandEncoder.finish()]);
         }
 
         shaders() {
-            return this._shaders;
+            return shaders;
         }
 
-        reload(shaderName, shaderCode) {
-            if (shaderName !== "Triangle") return;
+        reloadShader(shaderName, shaderCode) {
             this.pipeline = this.device.createRenderPipeline({
                 layout: "auto",
                 vertex: {
@@ -98,14 +83,10 @@ fn fs_main(@location(0) vColor: vec4<f32>) -> @location(0) vec4<f32> {
                         format: this.context.getPreferredFormat(this.adapter)
                     }]
                 },
-                primitive:{
-                    topology: "triangle-list"
+                primitive: {
+                    topology: "triangle-strip"
                 }
             });
-        }
-
-        resize(width, height) {
-            super.resize(width, height);
         }
     }
 }

@@ -33,6 +33,16 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
+.NamedElement {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+.NumberBox {
+
+}
+
 .ComboBox {
     padding: 0.25em;
 }

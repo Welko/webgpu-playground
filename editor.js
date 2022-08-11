@@ -186,12 +186,10 @@ class Editor extends GUI.Panel {
     async compile() {
         const info = await this.device.createShaderModule({ code: this.editor.text }).compilationInfo();
         this.message.clear();
-        if (info.messages.length === 0) {
-            this.message.add("Compilation successful!");
-            this.message.add("Download shader", () => this.download());
-            return true;
+        const noErrors = info.messages.filter((m) => m.type === "error").length === 0;
+        if (noErrors) {
+            this.message.add("SUCCESS! Click to download", () => this.download());
         }
-
         for (const m of info.messages) {
             const highlight = () => {
                 // TODO
@@ -201,6 +199,6 @@ class Editor extends GUI.Panel {
             }
             this.message.add("(" + m.type + "@" + m.lineNum + ":" + m.linePos + ") " + m.message, highlight);
         }
-        return false;
+        return noErrors;
     }
 }
