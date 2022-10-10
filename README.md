@@ -22,7 +22,7 @@ You can also check it out online right now: [welko.github.io/webgpu-playground](
 
 ## WebGPU calls
 
-The WebGPU calls outside of a sample are kept to a minimum, otherwise it's easy to lose track of what's going on.
+The WebGPU calls outside of a sample are kept to a minimum, otherwise it would be easy to lose track of what's going on.
 The few calls to WebGPU outside of samples are in main.js and they consist of the following:
 
 
