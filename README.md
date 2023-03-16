@@ -15,7 +15,7 @@ You can also check it out online right now: [welko.github.io/webgpu-playground](
 3) Now back to your new file, choose a unique name for your sample like "SomeCoolName" and register the sample by writing: SAMPLES.SomeCoolName = class extends Sample { ... }
 4) Check the base class Sample at the end of the file main.js to see what functions you can use and override. Overriding the constructor is not recommended. The comments there should help
 5) Check the existing samples under the /samples directory for nice ways to do things
-6) If you wish to create a GUI for your sample in [nanogui](https://github.com/wjakob/nanogui) fashion, you can! Have a look at gui/gui.js for the elements that are implemented. Create a window with `const window = new GUI.Window(...)` and add it to the workspace with `this.gui.add(window)`. this.gui is a GUI.Workspace
+6) If you wish to create a GUI for your sample in [ImGui](https://github.com/ocornut/imgui) fashion, you can! Have a look at gui/gui.js for the elements that are implemented. Create a window with `const window = new GUI.Window(...)` and add it to the workspace with `this.gui.add(window)`. this.gui is a GUI.Workspace
 7) Enjoy
 
 
